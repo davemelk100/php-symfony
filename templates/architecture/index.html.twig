@@ -1,0 +1,319 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}How This App Works — Architecture Overview{% endblock %}
+{% block body_id 'architecture-page' %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        {{ include('default/_flash_messages.html.twig') }}
+
+        <h1 class="mb-4">How This Application Works</h1>
+        <p class="lead text-secondary mb-5">
+            A visual guide to the Symfony Demo Application architecture — its layers, data flow, and key components.
+        </p>
+
+        {# ── REQUEST LIFECYCLE DIAGRAM ── #}
+        <div class="card mb-5">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h5 mb-0"><twig:ux:icon name="tabler:arrows-right-left"/> Request Lifecycle</h2>
+            </div>
+            <div class="card-body">
+                <div class="architecture-diagram text-center py-4" style="overflow-x:auto;">
+                    <svg viewBox="0 0 900 220" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;width:100%;font-family:system-ui,sans-serif;">
+                        {# Browser #}
+                        <rect x="10" y="70" width="120" height="60" rx="8" fill="#0d6efd" stroke="#0a58ca" stroke-width="2"/>
+                        <text x="70" y="95" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Browser</text>
+                        <text x="70" y="113" text-anchor="middle" fill="#cfe2ff" font-size="11">HTTP Request</text>
+
+                        <line x1="130" y1="100" x2="175" y2="100" stroke="#6c757d" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        {# Router #}
+                        <rect x="175" y="70" width="110" height="60" rx="8" fill="#198754" stroke="#146c43" stroke-width="2"/>
+                        <text x="230" y="95" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Router</text>
+                        <text x="230" y="113" text-anchor="middle" fill="#d1e7dd" font-size="11">Match Route</text>
+
+                        <line x1="285" y1="100" x2="330" y2="100" stroke="#6c757d" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        {# Security #}
+                        <rect x="330" y="70" width="110" height="60" rx="8" fill="#dc3545" stroke="#b02a37" stroke-width="2"/>
+                        <text x="385" y="95" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Security</text>
+                        <text x="385" y="113" text-anchor="middle" fill="#f8d7da" font-size="11">Auth & Voters</text>
+
+                        <line x1="440" y1="100" x2="485" y2="100" stroke="#6c757d" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        {# Controller #}
+                        <rect x="485" y="70" width="120" height="60" rx="8" fill="#6f42c1" stroke="#59359a" stroke-width="2"/>
+                        <text x="545" y="95" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Controller</text>
+                        <text x="545" y="113" text-anchor="middle" fill="#e2d9f3" font-size="11">Handle Logic</text>
+
+                        {# Doctrine (below controller) #}
+                        <line x1="545" y1="130" x2="545" y2="160" stroke="#6c757d" stroke-width="2" marker-end="url(#arrow)"/>
+                        <rect x="485" y="160" width="120" height="50" rx="8" fill="#fd7e14" stroke="#ca6510" stroke-width="2"/>
+                        <text x="545" y="183" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Doctrine ORM</text>
+                        <text x="545" y="199" text-anchor="middle" fill="#fff3cd" font-size="11">SQLite DB</text>
+
+                        <line x1="605" y1="100" x2="650" y2="100" stroke="#6c757d" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        {# Twig #}
+                        <rect x="650" y="70" width="110" height="60" rx="8" fill="#20c997" stroke="#1aa179" stroke-width="2"/>
+                        <text x="705" y="95" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Twig</text>
+                        <text x="705" y="113" text-anchor="middle" fill="#d1f2eb" font-size="11">Render HTML</text>
+
+                        <line x1="760" y1="100" x2="805" y2="100" stroke="#6c757d" stroke-width="2" marker-end="url(#arrow)"/>
+
+                        {# Response #}
+                        <rect x="805" y="70" width="85" height="60" rx="8" fill="#0d6efd" stroke="#0a58ca" stroke-width="2"/>
+                        <text x="847" y="95" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Response</text>
+                        <text x="847" y="113" text-anchor="middle" fill="#cfe2ff" font-size="11">HTML</text>
+
+                        {# Arrow marker #}
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#6c757d"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                <p class="text-secondary mt-3">
+                    Every request follows this path: the <strong>Router</strong> matches the URL to a controller action,
+                    the <strong>Security</strong> layer checks authentication and authorization (via voters),
+                    the <strong>Controller</strong> processes business logic (often querying the database through <strong>Doctrine ORM</strong>),
+                    and finally <strong>Twig</strong> renders the HTML response sent back to the browser.
+                </p>
+            </div>
+        </div>
+
+        {# ── ENTITY RELATIONSHIP DIAGRAM ── #}
+        <div class="card mb-5">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h5 mb-0"><twig:ux:icon name="tabler:database"/> Data Model</h2>
+            </div>
+            <div class="card-body">
+                <div class="architecture-diagram text-center py-4" style="overflow-x:auto;">
+                    <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" style="max-width:700px;width:100%;font-family:system-ui,sans-serif;">
+                        {# User entity #}
+                        <rect x="20" y="30" width="160" height="130" rx="8" fill="#fff" stroke="#0d6efd" stroke-width="2"/>
+                        <rect x="20" y="30" width="160" height="32" rx="8" fill="#0d6efd"/>
+                        <rect x="20" y="54" width="160" height="8" fill="#0d6efd"/>
+                        <text x="100" y="52" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">User</text>
+                        <text x="32" y="80" fill="#333" font-size="11">id, fullName, username</text>
+                        <text x="32" y="96" fill="#333" font-size="11">email, password, roles</text>
+                        <text x="32" y="120" fill="#6c757d" font-size="11">ROLE_USER</text>
+                        <text x="32" y="136" fill="#6c757d" font-size="11">ROLE_ADMIN</text>
+
+                        {# Post entity #}
+                        <rect x="270" y="30" width="160" height="140" rx="8" fill="#fff" stroke="#6f42c1" stroke-width="2"/>
+                        <rect x="270" y="30" width="160" height="32" rx="8" fill="#6f42c1"/>
+                        <rect x="270" y="54" width="160" height="8" fill="#6f42c1"/>
+                        <text x="350" y="52" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Post</text>
+                        <text x="282" y="80" fill="#333" font-size="11">id, title, slug</text>
+                        <text x="282" y="96" fill="#333" font-size="11">summary, content</text>
+                        <text x="282" y="112" fill="#333" font-size="11">publishedAt</text>
+                        <text x="282" y="136" fill="#6c757d" font-size="11">author (User)</text>
+                        <text x="282" y="152" fill="#6c757d" font-size="11">comments[], tags[]</text>
+
+                        {# Comment entity #}
+                        <rect x="270" y="210" width="160" height="80" rx="8" fill="#fff" stroke="#20c997" stroke-width="2"/>
+                        <rect x="270" y="210" width="160" height="32" rx="8" fill="#20c997"/>
+                        <rect x="270" y="234" width="160" height="8" fill="#20c997"/>
+                        <text x="350" y="232" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Comment</text>
+                        <text x="282" y="260" fill="#333" font-size="11">id, content, publishedAt</text>
+                        <text x="282" y="276" fill="#6c757d" font-size="11">post (Post), author (User)</text>
+
+                        {# Tag entity #}
+                        <rect x="520" y="30" width="160" height="80" rx="8" fill="#fff" stroke="#fd7e14" stroke-width="2"/>
+                        <rect x="520" y="30" width="160" height="32" rx="8" fill="#fd7e14"/>
+                        <rect x="520" y="54" width="160" height="8" fill="#fd7e14"/>
+                        <text x="600" y="52" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Tag</text>
+                        <text x="532" y="80" fill="#333" font-size="11">id, name (unique)</text>
+                        <text x="532" y="96" fill="#6c757d" font-size="11">Categorizes posts</text>
+
+                        {# Relationships #}
+                        {# User -> Post (1:M) #}
+                        <line x1="180" y1="95" x2="270" y2="95" stroke="#6c757d" stroke-width="2"/>
+                        <text x="225" y="88" text-anchor="middle" fill="#6c757d" font-size="10" font-weight="bold">1 : M</text>
+
+                        {# Post -> Comment (1:M) #}
+                        <line x1="350" y1="170" x2="350" y2="210" stroke="#6c757d" stroke-width="2"/>
+                        <text x="370" y="195" fill="#6c757d" font-size="10" font-weight="bold">1 : M</text>
+
+                        {# Post -> Tag (M:M) #}
+                        <line x1="430" y1="95" x2="520" y2="70" stroke="#6c757d" stroke-width="2"/>
+                        <text x="475" y="72" text-anchor="middle" fill="#6c757d" font-size="10" font-weight="bold">M : M</text>
+
+                        {# User -> Comment #}
+                        <line x1="100" y1="160" x2="100" y2="250" stroke="#6c757d" stroke-width="1.5" stroke-dasharray="6,3"/>
+                        <line x1="100" y1="250" x2="270" y2="250" stroke="#6c757d" stroke-width="1.5" stroke-dasharray="6,3"/>
+                        <text x="185" y="244" text-anchor="middle" fill="#adb5bd" font-size="10">author</text>
+                    </svg>
+                </div>
+                <p class="text-secondary mt-3">
+                    Four Doctrine entities form the data model. A <strong>User</strong> authors many <strong>Posts</strong>.
+                    Each Post has many <strong>Comments</strong> (also linked to Users) and a many-to-many relationship with <strong>Tags</strong> (max 4 per post).
+                    The database is SQLite by default.
+                </p>
+            </div>
+        </div>
+
+        {# ── LAYER-BY-LAYER EXPLANATION ── #}
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header"><h3 class="h6 mb-0"><twig:ux:icon name="tabler:route"/> Routing</h3></div>
+                    <div class="card-body">
+                        <p>Routes are defined via PHP attributes (<code>#[Route]</code>) on controller methods. All public URLs are prefixed with <code>/{_locale}/</code> for i18n (28 locales supported).</p>
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead><tr><th>URL Pattern</th><th>Purpose</th></tr></thead>
+                            <tbody>
+                                <tr><td><code>/blog/</code></td><td>Paginated post listing</td></tr>
+                                <tr><td><code>/blog/posts/{slug}</code></td><td>Single post + comments</td></tr>
+                                <tr><td><code>/blog/search</code></td><td>Full-text search</td></tr>
+                                <tr><td><code>/admin/post/</code></td><td>Admin CRUD for posts</td></tr>
+                                <tr><td><code>/login</code></td><td>Authentication form</td></tr>
+                                <tr><td><code>/profile/edit</code></td><td>User profile management</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header"><h3 class="h6 mb-0"><twig:ux:icon name="tabler:shield-lock"/> Security</h3></div>
+                    <div class="card-body">
+                        <p>Form-based login with "Remember Me" support. Two roles exist:</p>
+                        <ul>
+                            <li><strong>ROLE_USER</strong> &mdash; can comment on posts and edit their profile</li>
+                            <li><strong>ROLE_ADMIN</strong> &mdash; inherits ROLE_USER; can create, edit, and delete posts</li>
+                        </ul>
+                        <p class="mb-0">A custom <strong>PostVoter</strong> ensures only the author of a post can edit or delete it, even among admins.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header"><h3 class="h6 mb-0"><twig:ux:icon name="tabler:code"/> Controllers &amp; Forms</h3></div>
+                    <div class="card-body">
+                        <p>Two main controllers handle all logic:</p>
+                        <ul>
+                            <li><strong>BlogController</strong> &mdash; public blog pages, comments, search, RSS feed</li>
+                            <li><strong>Admin\BlogController</strong> &mdash; full CRUD for managing posts</li>
+                        </ul>
+                        <p class="mb-0">Symfony Forms (PostType, CommentType) handle validation, CSRF protection, and data transformation. A custom <code>TagsInputType</code> converts comma-separated text into Tag entities.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header"><h3 class="h6 mb-0"><twig:ux:icon name="tabler:layout"/> Templates &amp; Frontend</h3></div>
+                    <div class="card-body">
+                        <p>Twig templates use a three-level inheritance model:</p>
+                        <ol>
+                            <li><strong>base.html.twig</strong> &mdash; global layout, navbar, footer</li>
+                            <li><strong>admin/layout.html.twig</strong> &mdash; admin-specific navigation</li>
+                            <li><strong>Page templates</strong> &mdash; individual page content</li>
+                        </ol>
+                        <p class="mb-0">The frontend uses <strong>Bootstrap 5</strong> (compiled via Sass), <strong>Stimulus</strong> for JS interactions, and <strong>Tabler Icons</strong>. Assets are managed with Symfony's AssetMapper.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# ── DIRECTORY STRUCTURE ── #}
+        <div class="card mb-5">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h5 mb-0"><twig:ux:icon name="tabler:folder"/> Project Structure</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="h6">Backend (<code>src/</code>)</h4>
+                        <pre class="bg-light p-3 rounded"><code>src/
+  Controller/        # Route handlers
+    BlogController       # Public blog pages
+    Admin/BlogController # Admin CRUD
+    SecurityController   # Login/logout
+    UserController       # Profile management
+  Entity/            # Doctrine ORM models
+    User, Post, Comment, Tag
+  Repository/        # Database queries
+    PostRepository       # Custom search & pagination
+  Form/              # Form builders
+    PostType, CommentType
+  Security/          # Authorization
+    PostVoter            # Per-post access control
+  EventSubscriber/   # Kernel event listeners
+  Twig/              # Custom Twig extensions</code></pre>
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="h6">Frontend (<code>templates/</code>)</h4>
+                        <pre class="bg-light p-3 rounded"><code>templates/
+  base.html.twig         # Root layout
+  blog/
+    index.html.twig      # Post listing
+    post_show.html.twig  # Single post view
+    search.html.twig     # Search page
+  admin/
+    layout.html.twig     # Admin layout
+    blog/                # Admin CRUD templates
+  security/
+    login.html.twig      # Login form
+  user/
+    edit.html.twig       # Profile editor
+
+config/
+  packages/security.yaml # Auth config
+  routes.yaml            # Route discovery</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# ── KEY FEATURES ── #}
+        <div class="card mb-5">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h5 mb-0"><twig:ux:icon name="tabler:star"/> Key Features</h2>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <h4 class="h6">Blog & Comments</h4>
+                        <p class="text-secondary small mb-0">Create and browse posts with Markdown content, tag filtering, pagination, RSS feed, and authenticated commenting.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4 class="h6">Admin Panel</h4>
+                        <p class="text-secondary small mb-0">Full CRUD for posts with auto-slug generation, date picker, tag autocomplete, and author-only access via Voters.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4 class="h6">Internationalization</h4>
+                        <p class="text-secondary small mb-0">28 locales with URL-based language switching, translation files, and right-to-left (RTL) layout support.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4 class="h6">Search</h4>
+                        <p class="text-secondary small mb-0">Full-text search across post titles using Doctrine LIKE queries, returning up to 10 results.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4 class="h6">Security</h4>
+                        <p class="text-secondary small mb-0">Form login, remember-me cookies, role hierarchy, CSRF protection on all forms, and custom Voter authorization.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4 class="h6">Developer Tools</h4>
+                        <p class="text-secondary small mb-0">Web Profiler toolbar, source code viewer in templates, PHPUnit test suite, and data fixtures for seeding.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mb-4">
+            <a href="{{ path('blog_index') }}" class="btn btn-primary">
+                <twig:ux:icon name="tabler:arrow-left"/> Back to Blog
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}
